@@ -1,6 +1,6 @@
 Aqui está um exemplo simples de código em Java que implementa um sistema de reconhecimento de voz básico usando o Google Cloud Speech-to-Text API:
 
-```
+```java
 import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;
 import com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
