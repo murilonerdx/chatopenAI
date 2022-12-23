@@ -50,10 +50,8 @@ public class SpringBootProjectGenerator {
     return sb.toString();
   }
 }
-Este código usa o HttpClient da biblioteca padrão do Java para enviar uma solicitação HTTP POST para o Spring Initializr com os parâmetros especificados. A resposta é um arquivo ZIP com o projeto Spring Boot gerado, que é salvo
-
-
-
 
 
 ```
+
+Este código usa o HttpClient da biblioteca padrão do Java para enviar uma solicitação HTTP POST para o Spring Initializr com os parâmetros especificados. A resposta é um arquivo ZIP com o projeto Spring Boot gerado, que é salvo
