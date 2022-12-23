@@ -125,3 +125,146 @@ public class YouTubeVideoCreator {
 ```
 
 Este código usa a API do YouTube e a biblioteca de cliente Java para criar uma nova instância do cliente YouTube autorizado. Em seguida, ele cria um vídeo no YouTube com os parâmetros fornecidos, incluindo o título, a descrição, a categoria, as tags e o caminho do arquivo de vídeo. Quando o vídeo é criado, o ID do vídeo é exibido na saída.
+
+
+
+## Outro
+Para criar vídeos automatizados para o YouTube usando Inteligência Artificial (IA), você pode usar uma combinação de bibliotecas de processamento de vídeo e APIs de IA, como o TensorFlow ou o OpenCV. Aqui está um exemplo de código que demonstra como fazer isso:
+
+```java
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoSnippet;
+import com.google.api.services.youtube.model.VideoStatus;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.videoio.VideoWriter;
+import org.opencv.videoio.Videoio;
+
+public class YouTubeVideoCreator {
+  private static final String APPLICATION_NAME = "YouTube Video Creator";
+  private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+  private static final String TOKENS_DIRECTORY_PATH = "tokens";
+
+  /**
+   * Global instance of the scopes required by this quickstart.
+   * If modifying these SCOPES, delete your previously saved tokens/ folder.
+   */
+  private static final List<String> SCOPES = Arrays.asList("https://www.googleapis.com/auth/youtube.upload");
+
+  /**
+   * Creates an authorized Credential object.
+   * @param HTTP_TR
+   /**
+   * Creates an authorized Credential object.
+   * @param HTTP_TRANSPORT The network HTTP Transport.
+   * @return An authorized Credential object.
+   * @throws IOException If the credentials.json file cannot be found.
+   */
+  private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+    // Load client secrets.
+    InputStream in = YouTubeVideoCreator.class.getResourceAsStream("/credentials.json");
+    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+
+    // Build flow and trigger user authorization request.
+    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+        HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+        .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
+        .setAccessType("offline")
+        .build();
+    LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+    return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+  }
+
+  /**
+   * Creates a video on YouTube using the YouTube API.
+   * @param youtube The YouTube API client.
+   * @param videoTitle The title of the video.
+   * @param videoDescription The description of the video.
+   * @param videoCategory The category of the video.
+   * @param videoTags The tags for the video.
+   * @param videoFilePath The path to the video file to upload.
+   * @return The ID of the video that was created.
+   * @throws IOException If there is a problem uploading the video.
+   */
+  private static String createVideo(YouTube youtube, String videoTitle, String videoDescription,
+      String videoCategory, List<String> videoTags, String videoFilePath) throws IOException {
+    // Create video metadata
+    Video video = new Video();
+    VideoSnippet snippet = new VideoSnippet();
+    VideoStatus status = new VideoStatus();
+    snippet.setTitle(videoTitle);
+    snippet.setDescription(videoDescription);
+/**
+   * Gets the media content of the specified file.
+   * @param filePath The path to the file.
+   * @return The media content of the file.
+   * @throws IOException If the file cannot be read.
+   */
+  private static InputStreamContent getMediaContent(String filePath) throws IOException {
+    File file = new File(filePath);
+    InputStreamContent mediaContent = new InputStreamContent(
+        "video/*", new BufferedInputStream(new FileInputStream(file)));
+    mediaContent.setLength(file.length());
+    return mediaContent;
+  }
+
+  public static void main(String[] args) throws GeneralSecurityException, IOException, InterruptedException {
+    // Load the OpenCV library
+    System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+
+    // Create a new video file
+    String videoFilePath = "path/to/video/file.mp4";
+    Mat frame = new Mat();
+    Mat image = Imgcodecs.imread("path/to/image/file.jpg");
+    VideoWriter videoWriter = new VideoWriter(videoFilePath, Videoio.CV_FOURCC('M', 'J', 'P', 'G'), 10, image.size());
+    for (int i = 0; i < 100; i++) {
+      videoWriter.write(image);
+    }
+    videoWriter.release();
+
+    // Build a new authorized API client service
+    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+    YouTube youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+        .setApplicationName(APPLICATION_NAME)
+        .build();
+
+    // Create the video
+    String videoTitle = "My Video";
+    String videoDescription = "A video created by the YouTube Video Creator";
+    String videoCategory = "22"; // category "People & Blogs"
+    List<String> videoTags = Arrays.asList();
+      // Create the video
+    String videoTitle = "My Video";
+    String videoDescription = "A video created by the YouTube Video Creator";
+    String videoCategory = "22"; // category "People & Blogs"
+    List<String> videoTags = Arrays.asList("youtube", "video", "creator");
+    String videoId = createVideo(youtube, videoTitle, videoDescription, videoCategory, videoTags, videoFilePath);
+    System.out.println("Video ID: " + videoId);
+  }
+}
+```
+
+Este código usa a biblioteca OpenCV para criar um vídeo a partir de uma imagem e, em seguida, usa a API do YouTube e a biblioteca de cliente Java para criar uma nova instância do cliente YouTube autorizado. Em seguida, ele cria um vídeo no YouTube com os parâmetros fornecidos, incluindo o título, a descrição, a categoria, as tags e o caminho do arquivo de vídeo. Quando o vídeo é criado, o ID do vídeo é exibido na saída.
+
+Observe que, para usar esta classe, você precisará ter uma chave de API do YouTube e um arquivo de credenciais JSON. Você também precisará instalar e configurar a biblioteca OpenCV e o Java Development Kit (JDK). Além disso, você precisará adicionar as bibliotecas de cliente do Google e do OpenCV como dependências do projeto.
