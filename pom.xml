@@ -101,7 +101,12 @@
             <artifactId>deeplearning4j-datavec-iterators</artifactId>
             <version>1.0.0-M2.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>rl4j-core</artifactId>
+            <version>1.0.0-M1.1</version>
+        </dependency>
+        <!-- Thanks for using https://jar-download.com -->
     </dependencies>
 
     <build>
